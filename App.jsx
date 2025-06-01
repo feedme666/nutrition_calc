@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { createRoot } from 'react-dom/client';
 import { format } from "date-fns";
+import { motion } from "framer-motion";
 import './index.css';
 
 function App() {
@@ -98,59 +99,138 @@ function App() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-4 space-y-6">
-      <h1 className="text-2xl font-bold">栄養投与計算機</h1>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-indigo-700 text-white py-10 px-4">
+      <motion.div
+        className="max-w-3xl mx-auto bg-white bg-opacity-10 backdrop-blur-md rounded-2xl shadow-xl p-8 space-y-6"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-yellow-300 text-center">
+          栄養投与計算機
+        </h1>
 
-      <div className="grid grid-cols-1 gap-4">
-        <label>身長 (cm)
-          <input type="number" value={height} onChange={(e) => setHeight(Number(e.target.value))} /></label>
-        <label>体重 (kg)
-          <input type="number" value={weight} onChange={(e) => setWeight(Number(e.target.value))} /></label>
-        <label>開始日
-          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} /></label>
-        <label>投与時間
-          <select value={duration} onChange={(e) => setDuration(e.target.value)}>
-            <option value="24h">24時間</option>
-            <option value="15h">15時間</option>
-          </select></label>
-        <label>目標達成までの日数
-          <select value={daysToTarget} onChange={(e) => setDaysToTarget(Number(e.target.value))}>
-            <option value={4}>4日間</option>
-            <option value={7}>7日間</option>
-          </select></label>
-        <label>経腸栄養剤の種類
-          <select value={formula} onChange={(e) => setFormula(e.target.value)}>
-            {Object.keys(formulaData).map((f) => (
-              <option key={f} value={f}>{f}</option>
-            ))}
-          </select></label>
-        <button onClick={calculate}>計算</button>
-      </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <label className="block">
+              <span className="text-lg font-bold">身長 (cm)</span>
+              <input
+                type="number"
+                value={height}
+                onChange={(e) => setHeight(Number(e.target.value))}
+                className="mt-1 w-full px-4 py-2 rounded-lg bg-white bg-opacity-20 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              />
+            </label>
+            <label className="block">
+              <span className="text-lg font-bold">体重 (kg)</span>
+              <input
+                type="number"
+                value={weight}
+                onChange={(e) => setWeight(Number(e.target.value))}
+                className="mt-1 w-full px-4 py-2 rounded-lg bg-white bg-opacity-20 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              />
+            </label>
+            <label className="block">
+              <span className="text-lg font-bold">開始日</span>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="mt-1 w-full px-4 py-2 rounded-lg bg-white bg-opacity-20 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              />
+            </label>
+            <label className="block">
+              <span className="text-lg font-bold">投与時間</span>
+              <select
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+                className="mt-1 w-full px-4 py-2 rounded-lg bg-white bg-opacity-20 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              >
+                <option value="24h">24時間</option>
+                <option value="15h">15時間</option>
+              </select>
+            </label>
+            <label className="block">
+              <span className="text-lg font-bold">目標達成までの日数</span>
+              <select
+                value={daysToTarget}
+                onChange={(e) => setDaysToTarget(Number(e.target.value))}
+                className="mt-1 w-full px-4 py-2 rounded-lg bg-white bg-opacity-20 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              >
+                <option value={4}>4日間</option>
+                <option value={7}>7日間</option>
+              </select>
+            </label>
+            <label className="block">
+              <span className="text-lg font-bold">経腸栄養剤の種類</span>
+              <select
+                value={formula}
+                onChange={(e) => setFormula(e.target.value)}
+                className="mt-1 w-full px-4 py-2 rounded-lg bg-white bg-opacity-20 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              >
+                {Object.keys(formulaData).map((f) => (
+                  <option key={f} value={f}>{f}</option>
+                ))}
+              </select>
+            </label>
 
-      {results && (
-        <div className="mt-6 space-y-2">
-          <div><strong>入力内容:</strong></div>
-          <div>身長: {results.height} cm</div>
-          <div>体重: {results.weight} kg</div>
-          <div>開始日: {results.startDate}</div>
-          <div>投与時間: {results.duration === '24h' ? '24時間' : '15時間'}</div>
-          <div>目標達成までの日数: {results.daysToTarget} 日</div>
-          <div>経腸栄養剤の種類: {results.formula}</div>
-          <hr className="my-2" />
-
-          <div><strong>BMI:</strong> {results.bmi}</div>
-          <div>栄養投与体重：{results.usedBW} kg（{results.weightTypeLabel}）</div>
-          <div>目標ｴﾈﾙｷﾞｰ量：25〜30 kcal/kg/day → {results.minEnergy}〜{results.maxEnergy} kcal/day</div>
-          <div>目標ﾀﾝﾊﾟｸ量：1.2〜1.5 g/kg/day → {results.minProtein}〜{results.maxProtein} g/day</div>
-          <div className="mt-4 space-y-2">
-            {results.schedule.map((s, i) => (
-              <div key={i} className="border p-3 rounded bg-gray-50">
-                {s.date} {formula} {s.rate}ml/h×{duration}、ﾐﾙｸﾌﾟﾛﾃｲﾝ{s.supp}包（E:{s.totalEnergy}kcal, P:{s.totalProtein}g）
-              </div>
-            ))}
+            <button
+              onClick={calculate}
+              className="mt-4 mx-auto block px-8 py-3 font-bold text-lg rounded-full bg-gradient-to-r from-yellow-400 to-pink-500 hover:from-yellow-500 hover:to-pink-600 focus:outline-none focus:ring-2 focus:ring-yellow-300"
+            >
+              計算
+            </button>
           </div>
+
+          {results && (
+            <motion.div
+              className="col-span-1 md:col-span-2 space-y-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+            >
+              <div className="space-y-1">
+                <div className="text-xl font-semibold">入力内容:</div>
+                <div>身長: {results.height} cm</div>
+                <div>体重: {results.weight} kg</div>
+                <div>開始日: {results.startDate}</div>
+                <div>投与時間: {results.duration === '24h' ? '24時間' : '15時間'}</div>
+                <div>目標達成までの日数: {results.daysToTarget} 日</div>
+                <div>経腸栄養剤の種類: {results.formula}</div>
+              </div>
+              <hr className="border-gray-400" />
+
+              <div className="space-y-1">
+                <div><strong>BMI:</strong> {results.bmi}</div>
+                <div>栄養投与体重：{results.usedBW} kg（{results.weightTypeLabel}）</div>
+                <div>目標ｴﾈﾙｷﾞｰ量：25〜30 kcal/kg/day → {results.minEnergy}〜{results.maxEnergy} kcal/day</div>
+                <div>目標ﾀﾝﾊﾟｸ量：1.2〜1.5 g/kg/day → {results.minProtein}〜{results.maxProtein} g/day</div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {results.schedule.map((s, i) => (
+                  <motion.div
+                    key={i}
+                    className="border border-gray-300 rounded-xl bg-white bg-opacity-20 p-4 shadow backdrop-blur hover:bg-opacity-30 transition"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                  >
+                    <div className="text-lg font-bold mb-2">{s.date}</div>
+                    <div className="flex items-center space-x-1">
+                      <span className="font-medium">{formula}</span>
+                      <span>{s.rate} ml/h × {results.duration}</span>
+                    </div>
+                    <div className="mt-1">ミルクプロテイン: {s.supp} 包</div>
+                    <div className="mt-2 text-sm">E: {s.totalEnergy} kcal</div>
+                    <div className="text-sm">P: {s.totalProtein} g</div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
         </div>
-      )}
+      </motion.div>
     </div>
   );
 }
