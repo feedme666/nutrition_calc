@@ -218,7 +218,7 @@ function App() {
                   >
                     <div className="text-lg font-bold mb-2">{s.date}</div>
                     <div className="flex items-center space-x-1">
-                      <span className="font-medium">{formula}</span>
+                      <span className="font-medium">{results.formula}</span>
                       <span>{s.rate} ml/h × {results.duration}</span>
                     </div>
                     <div className="mt-1">ミルクプロテイン: {s.supp} 包</div>
