@@ -4,6 +4,36 @@ import { format } from "date-fns";
 import { motion } from "framer-motion";
 import './index.css';
 
+export function optimizeNutrition({ usedBW, formulaInfo, hoursPerDay }) {
+  const targetEnergy = usedBW * 27;
+  const targetProtein = usedBW * 1.3;
+  let best = null;
+  let minError = Infinity;
+
+  for (let rate = 5; rate <= 200; rate++) {
+    const volume = rate * hoursPerDay;
+    const energyFromFormula = volume * formulaInfo.kcal;
+    const proteinFromFormula = volume * formulaInfo.protein;
+
+    for (let supp = 0; supp <= 6; supp++) {
+      const totalEnergy = energyFromFormula + supp * 50;
+      const totalProtein = proteinFromFormula + supp * 10;
+      const error = Math.abs(totalEnergy - targetEnergy) +
+        Math.abs(totalProtein - targetProtein);
+      if (error < minError) {
+        minError = error;
+        best = {
+          rate,
+          supp,
+          totalEnergy: Math.round(totalEnergy),
+          totalProtein: Math.round(totalProtein)
+        };
+      }
+    }
+  }
+  return best;
+}
+
 function App() {
   const [height, setHeight] = useState(170);
   const [weight, setWeight] = useState(60);
@@ -21,34 +51,7 @@ function App() {
     "ｱｲｿｶﾙｻﾎﾟｰﾄ1.0": { kcal: 1.0, protein: 0.045 }
   };
 
-  function optimizeNutrition({ usedBW, formulaInfo, hoursPerDay }) {
-    const targetEnergy = usedBW * 27;
-    const targetProtein = usedBW * 1.3;
-    let best = null;
-    let minError = Infinity;
 
-    for (let rate = 5; rate <= 200; rate++) {
-      const volume = rate * hoursPerDay;
-      const energyFromFormula = volume * formulaInfo.kcal;
-      const proteinFromFormula = volume * formulaInfo.protein;
-
-      for (let supp = 0; supp <= 6; supp++) {
-        const totalEnergy = energyFromFormula + supp * 50;
-        const totalProtein = proteinFromFormula + supp * 10;
-        const error = Math.abs(totalEnergy - targetEnergy) + Math.abs(totalProtein - targetProtein);
-        if (error < minError) {
-          minError = error;
-          best = {
-            rate,
-            supp,
-            totalEnergy: Math.round(totalEnergy),
-            totalProtein: Math.round(totalProtein)
-          };
-        }
-      }
-    }
-    return best;
-  }
 
   function calculate() {
     const heightM = height / 100;
