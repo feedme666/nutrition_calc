@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { createRoot } from 'react-dom/client';
-import { format } from "date-fns";
+import { format, parseISO, addDays } from "date-fns";
 import { motion } from "framer-motion";
 import './index.css';
 
@@ -67,7 +67,7 @@ function App() {
 
     const schedule = [];
     for (let day = 0; day < daysToTarget; day++) {
-      const dateObj = new Date(new Date(startDate).getTime() + day * 86400000);
+      const dateObj = addDays(parseISO(startDate), day);
       const date = `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
       const rate = Math.round((best.rate / daysToTarget) * (day + 1));
       const volume = rate * hoursPerDay;
